@@ -25,7 +25,52 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Define interfaces for type safety
+const HabitIcon = ({ name }: { name: string }) => {
+  switch (name) {
+    case "check-circle":
+      return <CheckCircle />;
+    case "smartphone":
+      return <Smartphone />;
+    default:
+      return <CheckCircle />;
+  }
+};
+
+const initialHabits: Habit[] = [
+  {
+    id: 1,
+    name: "Exercise",
+    iconName: "check-circle",
+    unit: "minutes",
+    target: 30,
+    current: 0,
+    color: "#6366F1",
+    streak: 0,
+    history: Array(7)
+      .fill(0)
+      .map((_, i) => ({
+        day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i],
+        value: 0,
+      })),
+  },
+  {
+    id: 2,
+    name: "Screen Time",
+    iconName: "smartphone",
+    unit: "hours",
+    target: 4,
+    current: 0,
+    color: "#F87171",
+    streak: 0,
+    history: Array(7)
+      .fill(0)
+      .map((_, i) => ({
+        day: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i],
+        value: 0,
+      })),
+  },
+];
+
 interface HabitDay {
   day: string;
   value: number;
@@ -56,108 +101,103 @@ interface LoginForm {
   password: string;
 }
 
-// Custom icons moved to a component
-const HabitIcon = ({ name }: { name: string }) => {
-  switch (name) {
-    case "water":
-      return (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 2v6m0 0l-4 8a4 4 0 0 0 8 0l-4-8z" />
-        </svg>
-      );
-    case "moon":
-      return (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      );
-    case "smartphone":
-      return <Smartphone />;
-    default:
-      return <CheckCircle />;
-  }
-};
+interface SignInModalProps {
+  isSignUp: boolean;
+  setIsSignUp: (value: boolean) => void;
+  loginForm: LoginForm;
+  setLoginForm: (form: LoginForm) => void;
+  handleLogin: (e: React.FormEvent) => void;
+  setShowSignInModal: (show: boolean) => void;
+}
 
-// Initial habit data with some sample history
-const initialHabits: Habit[] = [
-  {
-    id: 1,
-    name: "Sleep",
-    iconName: "moon",
-    unit: "hours",
-    target: 8,
-    current: 7.5,
-    color: "#6366F1",
-    streak: 3,
-    history: [
-      { day: "Mon", value: 7.0 },
-      { day: "Tue", value: 6.5 },
-      { day: "Wed", value: 8.0 },
-      { day: "Thu", value: 7.5 },
-      { day: "Fri", value: 7.5 },
-      { day: "Sat", value: 8.5 },
-      { day: "Sun", value: 7.5 },
-    ],
-  },
-  {
-    id: 2,
-    name: "Water",
-    iconName: "water",
-    unit: "glasses",
-    target: 8,
-    current: 6,
-    color: "#60A5FA",
-    streak: 5,
-    history: [
-      { day: "Mon", value: 6 },
-      { day: "Tue", value: 8 },
-      { day: "Wed", value: 7 },
-      { day: "Thu", value: 5 },
-      { day: "Fri", value: 6 },
-      { day: "Sat", value: 4 },
-      { day: "Sun", value: 6 },
-    ],
-  },
-  {
-    id: 3,
-    name: "Screen Time",
-    iconName: "smartphone",
-    unit: "hours",
-    target: 2,
-    current: 3.5,
-    color: "#F87171",
-    streak: 0,
-    history: [
-      { day: "Mon", value: 2.5 },
-      { day: "Tue", value: 1.5 },
-      { day: "Wed", value: 3.0 },
-      { day: "Thu", value: 4.0 },
-      { day: "Fri", value: 3.5 },
-      { day: "Sat", value: 5.0 },
-      { day: "Sun", value: 3.5 },
-    ],
-  },
-];
+const SignInModal = ({
+  isSignUp,
+  setIsSignUp,
+  loginForm,
+  setLoginForm,
+  handleLogin,
+  setShowSignInModal,
+}: SignInModalProps) => (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    onClick={() => setShowSignInModal(false)}
+  >
+    <div
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        onClick={() => setShowSignInModal(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+      >
+        ×
+      </button>
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        {isSignUp ? "Create Account" : "Welcome Back"}
+      </h2>
+      <form onSubmit={handleLogin} className="space-y-6">
+        {isSignUp && (
+          <div>
+            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              required
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Enter your full name"
+            />
+          </div>
+        )}
+        <div>
+          <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            required
+            value={loginForm.email}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, email: e.target.value })
+            }
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+            placeholder="Enter your email"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            required
+            value={loginForm.password}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, password: e.target.value })
+            }
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
+            placeholder="Enter your password"
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors"
+        >
+          {isSignUp ? "Sign Up" : "Sign In"}
+        </button>
+      </form>
+      <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
+        {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+        <button
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 font-medium"
+        >
+          {isSignUp ? "Sign In" : "Sign Up"}
+        </button>
+      </p>
+    </div>
+  </div>
+);
 
 export default function HabitTracker() {
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
@@ -182,6 +222,7 @@ export default function HabitTracker() {
     { text: "Achieve Your Goals", color: "from-purple-600 to-pink-600" },
   ]);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [isSignUp, setIsSignUp] = useState(false);
 
   // Load data from localStorage on initial render
   useEffect(() => {
@@ -342,93 +383,6 @@ export default function HabitTracker() {
     setActivePage("tracker");
     setShowSignInModal(false);
   };
-
-  const SignInModal = () => (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      onClick={() => setShowSignInModal(false)}
-    >
-      <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md relative"
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
-      >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowSignInModal(false);
-          }}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
-        >
-          ×
-        </button>
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-          Welcome Back
-        </h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleLogin(e);
-          }}
-          className="space-y-6"
-        >
-          <div>
-            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={loginForm.email}
-              onChange={(e) => {
-                e.stopPropagation();
-                setLoginForm({ ...loginForm, email: e.target.value });
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
-              placeholder="Enter your email"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={loginForm.password}
-              onChange={(e) => {
-                e.stopPropagation();
-                setLoginForm({ ...loginForm, password: e.target.value });
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white"
-              placeholder="Enter your password"
-            />
-          </div>
-          <button
-            type="submit"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors"
-          >
-            Sign In
-          </button>
-        </form>
-        <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
-          Don&apos;t have an account?{" "}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowSignInModal(true);
-            }}
-            className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 font-medium"
-          >
-            Sign up
-          </button>
-        </p>
-      </div>
-    </div>
-  );
 
   const renderDashboard = () => (
     <div className="space-y-6">
@@ -818,7 +772,16 @@ export default function HabitTracker() {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100">
-      {showSignInModal && <SignInModal />}
+      {showSignInModal && (
+        <SignInModal
+          isSignUp={isSignUp}
+          setIsSignUp={setIsSignUp}
+          loginForm={loginForm}
+          setLoginForm={setLoginForm}
+          handleLogin={handleLogin}
+          setShowSignInModal={setShowSignInModal}
+        />
+      )}
       {activePage === "landing" ? (
         // Landing page content
         <div className="flex-grow">
