@@ -1086,6 +1086,18 @@ export default function HabitTracker() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="w-full border-t border-gray-200 dark:border-gray-800 py-6 mt-16">
+        <div className="max-w-5xl mx-auto px-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p>
+            © {new Date().getFullYear()} Habit Tracker. All rights reserved.
+          </p>
+          <p className="mt-2">
+            Built with Next.js, TypeScript, and Tailwind CSS
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
